@@ -1,7 +1,9 @@
 import { useCounting } from '../../hooks/useGameLogic/useCounting';
 import GameLayout from '../common/GameLayout';
-import FeedbackMessage from '../common/FeedbackMessage';
+import GameOption from '../common/GameOption';
 import Confetti from '../common/Confetti';
+import FeedbackMessage from '../common/FeedbackMessage';
+import { useState, useEffect } from 'react';
 
 export default function Counting() {
   const {
@@ -15,23 +17,32 @@ export default function Counting() {
     speak,
   } = useCounting();
 
+  const [orientation, setOrientation] = useState('portrait');
+
+  useEffect(() => {
+    const handleResize = () => {
+      setOrientation(window.innerHeight > window.innerWidth ? 'portrait' : 'landscape');
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <GameLayout title="Counting Fun" score={score}>
       <FeedbackMessage feedback={feedback} />
 
-      <div className="text-center mb-6">
-        <p className="text-text-secondary mb-2">How many {object.name}?</p>
-        <div className="flex items-center justify-center gap-4">
-          <div className="flex justify-center gap-2 text-6xl bg-gray-100 py-6 px-8 rounded-full flex-wrap">
+      <div className="text-center mb-3">
+        <p className="text-text-secondary text-sm mb-1">How many {object.name}?</p>
+        <div className="flex items-center justify-center gap-3 bg-gray-100 rounded-full py-2 px-4">
+          <div className="flex gap-1 text-4xl">
             {Array.from({ length: count }).map((_, i) => (
-              <span key={i} className="inline-block animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}>
-                {object.emoji}
-              </span>
+              <span key={i}>{object.emoji}</span>
             ))}
           </div>
           <button
             onClick={() => speak(`How many ${object.name}?`)}
-            className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-2xl hover:bg-primary/30 transition-colors"
+            className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-xl hover:bg-primary/30 transition-colors"
             aria-label="Repeat instruction"
           >
             🔊
@@ -39,21 +50,22 @@ export default function Counting() {
         </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-3 max-w-md mx-auto">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-          <div
+      <div className={`
+        grid gap-3 place-items-center h-full
+        ${orientation === 'portrait' 
+          ? 'grid-cols-2 grid-rows-2' 
+          : 'grid-cols-4 grid-rows-1'
+        }
+      `}>
+        {[1,2,3,4,5,6,7,8,9,10].map((num) => (
+          <GameOption
             key={num}
             onClick={() => handleNumberClick(num)}
-            className={`
-              bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-2xl p-4 text-2xl font-bold
-              text-center cursor-pointer shadow-lg transition-all transform hover:scale-110 active:scale-90
-              ${shakeId === num ? 'animate-shake' : ''}
-            `}
-            role="button"
-            tabIndex={0}
+            shake={shakeId === num}
           >
-            {num}
-          </div>
+            <span className="text-7xl">{num}</span>
+            <span>Number {num}</span>
+          </GameOption>
         ))}
       </div>
 

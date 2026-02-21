@@ -6,16 +6,13 @@ import { useGameProgress } from '../../contexts/GameProgressContext';
 import { shapes } from '../../utils/constants';
 
 const generateOptions = (targetShape) => {
-  // Always include the target
   const options = [targetShape];
-  // Add 2-3 random distinct shapes
   const otherShapes = shapes.filter(s => s.id !== targetShape.id);
   const shuffled = otherShapes.sort(() => Math.random() - 0.5);
-  const count = Math.floor(Math.random() * 2) + 2; // 2 or 3 additional options
-  for (let i = 0; i < count && i < shuffled.length; i++) {
+  const count = Math.min(3, shuffled.length); // ensure we have up to 3 others
+  for (let i = 0; i < count; i++) {
     options.push(shuffled[i]);
   }
-  // Shuffle final options
   return options.sort(() => Math.random() - 0.5);
 };
 
@@ -54,6 +51,7 @@ export const useShapeMatch = () => {
       setShowStars(true);
       playCorrectSound?.();
       recordAttempt('shape-match', true);
+      speak('Amazing!');
       setFeedback({ show: true, type: 'success', message: '🌟 Perfect!' });
       setTimeout(() => {
         setShowStars(false);
@@ -64,6 +62,7 @@ export const useShapeMatch = () => {
       playWrongSound?.();
       setShakeId(shape.id);
       recordAttempt('shape-match', false);
+      speak('Try again');
       setFeedback({ show: true, type: 'error', message: 'Try again!' });
       setTimeout(() => {
         setShakeId(null);

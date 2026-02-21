@@ -1,7 +1,9 @@
 import { useShapeMatch } from '../../hooks/useGameLogic/useShapeMatch';
 import GameLayout from '../common/GameLayout';
-import FeedbackMessage from '../common/FeedbackMessage';
+import GameOption from '../common/GameOption';
 import Stars from '../common/Stars';
+import FeedbackMessage from '../common/FeedbackMessage';
+import { useState, useEffect } from 'react';
 
 export default function ShapeMatch() {
   const {
@@ -15,21 +17,32 @@ export default function ShapeMatch() {
     speak,
   } = useShapeMatch();
 
+  const [orientation, setOrientation] = useState('portrait');
+
+  useEffect(() => {
+    const handleResize = () => {
+      setOrientation(window.innerHeight > window.innerWidth ? 'portrait' : 'landscape');
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <GameLayout title="Shape Match" score={score}>
       <FeedbackMessage feedback={feedback} />
 
       {currentShape && (
-        <div className="text-center mb-6">
-          <p className="text-text-secondary mb-2">Find the...</p>
-          <div className="flex items-center justify-center gap-4 bg-gray-100 rounded-full py-3 px-6">
-            <div className={`w-16 h-16 ${currentShape.color} rounded-lg flex items-center justify-center text-4xl text-white`}>
+        <div className="text-center mb-3">
+          <p className="text-text-secondary text-sm mb-1">Find the...</p>
+          <div className="flex items-center justify-center gap-3 bg-gray-100 rounded-full py-2 px-4">
+            <div className={`w-10 h-10 ${currentShape.color} rounded flex items-center justify-center text-white text-2xl`}>
               {currentShape.emoji}
             </div>
-            <span className="text-3xl font-bold text-text-primary">{currentShape.name}</span>
+            <span className="text-2xl font-bold text-text-primary">{currentShape.name}</span>
             <button
               onClick={() => speak(`Find the ${currentShape.name}`)}
-              className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-2xl hover:bg-primary/30 transition-colors"
+              className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-xl hover:bg-primary/30 transition-colors"
               aria-label="Repeat instruction"
             >
               🔊
@@ -38,23 +51,24 @@ export default function ShapeMatch() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+      <div className={`
+        grid gap-3 place-items-center h-full
+        ${orientation === 'portrait' 
+          ? 'grid-cols-2 grid-rows-2' 
+          : 'grid-cols-4 grid-rows-1'
+        }
+      `}>
         {options.map((shape) => (
-          <div
+          <GameOption
             key={shape.id}
             onClick={() => handleOptionClick(shape)}
-            className={`
-              ${shape.color} rounded-2xl p-6 cursor-pointer shadow-lg flex flex-col items-center gap-2
-              transition-all transform hover:scale-105 active:scale-95
-              ${shakeId === shape.id ? 'animate-shake' : ''}
-              ${currentShape?.id === shape.id ? 'ring-4 ring-primary ring-opacity-50' : ''}
-            `}
-            role="button"
-            tabIndex={0}
+            shake={shakeId === shape.id}
           >
-            <span className="text-7xl text-white">{shape.emoji}</span>
-            <span className="text-xl font-medium text-white">{shape.name}</span>
-          </div>
+            <div className={`w-20 h-20 ${shape.color} rounded-xl flex items-center justify-center text-white text-5xl`}>
+              {shape.emoji}
+            </div>
+            <span>{shape.name}</span>
+          </GameOption>
         ))}
       </div>
 

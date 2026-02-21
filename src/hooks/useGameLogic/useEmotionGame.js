@@ -7,11 +7,11 @@ import { emotions } from '../../utils/constants';
 
 const generateOptions = (target) => {
   const options = [target];
-  while (options.length < 3) {
-    const random = emotions[Math.floor(Math.random() * emotions.length)];
-    if (!options.some(e => e.id === random.id)) {
-      options.push(random);
-    }
+  const otherEmotions = emotions.filter(e => e.id !== target.id);
+  const shuffled = otherEmotions.sort(() => Math.random() - 0.5);
+  const count = Math.min(2, shuffled.length);
+  for (let i = 0; i < count; i++) {
+    options.push(shuffled[i]);
   }
   return options.sort(() => Math.random() - 0.5);
 };
@@ -51,6 +51,7 @@ export const useEmotionGame = () => {
       setShowStars(true);
       playCorrectSound?.();
       recordAttempt('emotion-game', true);
+      speak('You got it!');
       setFeedback({ show: true, type: 'success', message: '😊 You got it!' });
       setTimeout(() => {
         setShowStars(false);
@@ -61,6 +62,7 @@ export const useEmotionGame = () => {
       playWrongSound?.();
       setShakeId(emotion.id);
       recordAttempt('emotion-game', false);
+      speak('Try again');
       setFeedback({ show: true, type: 'error', message: 'Not quite...' });
       setTimeout(() => {
         setShakeId(null);

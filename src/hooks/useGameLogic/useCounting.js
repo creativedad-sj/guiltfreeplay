@@ -21,7 +21,7 @@ export const useCounting = () => {
   const vibrate = useVibration();
 
   const nextRound = useCallback(() => {
-    const newCount = Math.floor(Math.random() * 10) + 1; // 1-10
+    const newCount = Math.floor(Math.random() * 10) + 1;
     const newObject = countingObjects[Math.floor(Math.random() * countingObjects.length)];
     setCount(newCount);
     setObject(newObject);
@@ -40,6 +40,7 @@ export const useCounting = () => {
       setShowConfetti(true);
       playCorrectSound?.();
       recordAttempt('counting', true);
+      speak('Great counting!');
       setFeedback({ show: true, type: 'success', message: '🎉 Great counting!' });
       setTimeout(() => {
         setShowConfetti(false);
@@ -50,6 +51,7 @@ export const useCounting = () => {
       playWrongSound?.();
       setShakeId(num);
       recordAttempt('counting', false);
+      speak('Try again');
       setFeedback({ show: true, type: 'error', message: 'Oops! Try again' });
       setTimeout(() => {
         setShakeId(null);

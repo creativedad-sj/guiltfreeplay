@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 export default function GameOption({
   children,
   onClick,
-  isSelected = false,
   shake = false,
   className = '',
   ...props
@@ -21,12 +20,23 @@ export default function GameOption({
           : {}
       }
       onClick={onClick}
-      className={`game-option ${isSelected ? 'border-primary ring-4 ring-primary/20' : ''} ${className}`}
+      className={`
+        bg-white rounded-2xl shadow-lg p-2 flex flex-col items-center cursor-pointer
+        border-2 border-transparent hover:border-primary/50 transition-all
+        ${className}
+      `}
       role="button"
       tabIndex={0}
       {...props}
     >
-      {children}
+      {/* Large emoji / image */}
+      <div className="w-28 h-28 flex items-center justify-center overflow-hidden rounded-xl bg-gray-100 mb-1">
+        {children[0]}
+      </div>
+      {/* Name label */}
+      <span className="text-base font-medium text-text-secondary text-center">
+        {children[1]}
+      </span>
     </motion.div>
   );
 }

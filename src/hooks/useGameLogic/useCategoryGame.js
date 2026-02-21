@@ -35,7 +35,7 @@ export const useCategoryGame = (categoryItems, gameId, categoryName) => {
     setCurrentItem(newItem);
     // Show 4 random items (including target)
     const otherItems = categoryItems.filter(i => i.id !== newItem.id);
-    const shuffledOthers = shuffle(otherItems).slice(0, 3); // take 3 others
+    const shuffledOthers = shuffle(otherItems).slice(0, 3);
     const options = shuffle([newItem, ...shuffledOthers]);
     setShuffledItems(options);
     setFeedback({ show: false, type: '', message: '' });
@@ -55,6 +55,7 @@ export const useCategoryGame = (categoryItems, gameId, categoryName) => {
       setShowConfetti(true);
       playCorrectSound?.();
       recordAttempt(gameId, true);
+      speak('Amazing!'); // 👈 speak feedback
       setFeedback({ show: true, type: 'success', message: '🎉 Great!' });
       setTimeout(() => {
         setShowConfetti(false);
@@ -65,6 +66,7 @@ export const useCategoryGame = (categoryItems, gameId, categoryName) => {
       playWrongSound?.();
       setShakeId(item.id);
       recordAttempt(gameId, false);
+      speak('Try again'); // 👈 speak feedback
       setFeedback({ show: true, type: 'error', message: 'Try again!' });
       setTimeout(() => {
         setShakeId(null);

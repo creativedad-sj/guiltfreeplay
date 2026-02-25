@@ -1,0 +1,1 @@
+import{b as t}from"./index-DQefmGNK.js";const o=(i=200)=>{if(window.navigator&&window.navigator.vibrate)try{window.navigator.vibrate(i)}catch(r){console.warn("Vibration failed:",r)}},n=()=>{const{vibrationEnabled:i}=t();return(r=200)=>{i&&o(r)}};export{n as u};
